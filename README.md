@@ -1,3 +1,6 @@
+Site is live at https://spiros40.github.io/leaflet-gsheets/
+
+
 # leaflet-gsheets
 How to create a simple [Leaflet](https://leafletjs.com/) web map that automatically pulls data from two simple Google Sheets tables. Sidebar created using [leaflet-sidebar-v2](https://github.com/nickpeihl/leaflet-sidebar-v2), and Google Sheets connection with [PapaParse](https://github.com/mholt/PapaParse).
 
