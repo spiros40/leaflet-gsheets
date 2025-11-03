@@ -155,50 +155,76 @@ function addPoints(data) {
   let pointGroupLayer = L.layerGroup().addTo(map);
   let markerType = "marker";
   let markerRadius = 100;
+  let distanceLimit = 1000; 
 
-  for (let row = 0; row < data.length; row++) {
-    let marker;
-    if (markerType == "circleMarker") {
-      marker = L.circleMarker([data[row].lat, data[row].lon], {
-        radius: markerRadius,
-      });
-    } else if (markerType == "circle") {
-      marker = L.circle([data[row].lat, data[row].lon], {
-        radius: markerRadius,
-      });
-    } else {
-      marker = L.marker([data[row].lat, data[row].lon]);
-    }
-    marker.addTo(pointGroupLayer);
+  
+  let referencePoint = [40.6263, 22.9482];
 
-    marker.feature = {
-      properties: {
-        name: data[row].name,
-        description: data[row].description,
-      },
-    };
+  //try to find user
+  map.locate({ setView: false, maxZoom: 16 });
 
-    marker.on({
-      click: function (e) {
-        L.DomEvent.stopPropagation(e);
-        document.getElementById("sidebar-title").innerHTML =
-          e.target.feature.properties.name;
-        document.getElementById("sidebar-content").innerHTML =
-          e.target.feature.properties.description;
-        sidebar.open(panelID);
-      },
-    });
+  //position finded
+  map.on("locationfound", function (e) {
+    referencePoint = [e.latitude, e.longitude];
+    showNearbyPoints();
+  });
 
-    // Fancier icons
-    let icon = L.AwesomeMarkers.icon({
-      icon: "info-circle",
-      iconColor: "white",
-      markerColor: data[row].color,
-      prefix: "fa",
-      extraClasses: "fa-rotate-0",
-    });
-    if (!markerType.includes("circle")) {
-      marker.setIcon(icon);
+  // fail to find
+  map.on("locationerror", function () {
+    alert("Δεν ήταν δυνατός ο εντοπισμός της θέσης σας — θα χρησιμοποιηθεί σημείο αναφοράς στη Θεσσαλονίκη.");
+    showNearbyPoints();
+  });
+
+  function showNearbyPoints() {
+    for (let row = 0; row < data.length; row++) {
+      let lat = parseFloat(data[row].lat);
+      let lon = parseFloat(data[row].lon);
+      if (isNaN(lat) || isNaN(lon)) continue;
+
+      // calculate 
+      let distance = map.distance(referencePoint, [lat, lon]);
+
+      // nearby points
+      if (distance <= distanceLimit) {
+        let marker;
+        if (markerType == "circleMarker") {
+          marker = L.circleMarker([lat, lon], { radius: markerRadius });
+        } else if (markerType == "circle") {
+          marker = L.circle([lat, lon], { radius: markerRadius });
+        } else {
+          marker = L.marker([lat, lon]);
+        }
+
+        //icon
+        let icon = L.AwesomeMarkers.icon({
+          icon: "map-marker-alt",
+          iconColor: "white",
+          markerColor: data[row].color || "blue",
+          prefix: "fa",
+        });
+        if (!markerType.includes("circle")) marker.setIcon(icon);
+
+        // sidebar
+        marker.feature = {
+          properties: {
+            name: data[row].name,
+            description: data[row].description,
+          },
+        };
+
+        marker.on({
+          click: function (e) {
+            L.DomEvent.stopPropagation(e);
+            document.getElementById("sidebar-title").innerHTML =
+              e.target.feature.properties.name;
+            document.getElementById("sidebar-content").innerHTML =
+              e.target.feature.properties.description;
+            sidebar.open(panelID);
+          },
+        });
+
+        marker.addTo(pointGroupLayer);
+      }
     }
   }
 }
