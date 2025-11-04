@@ -1,3 +1,4 @@
+# 🗺️ Για την σύνδεση με το site χρησιμοποιείστε αυτό το link
 Site is live at https://spiros40.github.io/leaflet-gsheets/
 
 
@@ -11,6 +12,6 @@ Site is live at https://spiros40.github.io/leaflet-gsheets/
 ## 🌍 Προεπισκόπηση Από το κινητό μπορείτε να βρείτε την τοποθεσία σας στον χάρτη
 
 <p align="center">
-  <img src="pics/mobile position.jpg" alt="Προεπισκόπηση Leaflet Χάρτη" width="500"/>
+  <img src="pics/mobile position.jpg" alt="Προεπισκόπηση Leaflet Χάρτη" width="300"/>
 </p>
 
